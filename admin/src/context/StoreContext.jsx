@@ -8,7 +8,7 @@ const StoreContextProvider = (props) => {
   const [admin, setAdmin] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Estado para controlar carregamento
-  const url = "http://localhost:4000";
+  const url = "https://tgii-food.onrender.com";
 
   useEffect(() => {
     const initializeAuth = async () => {
