@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node_modules/.bin/vite build",
+    "preinstall": "npm install -g vite@latest",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
      "render-build": "npm install --unsafe-perm && npm run build"
@@ -16,7 +17,8 @@
     "react-dom": "^18.3.1", 
     "react-router-dom": "^6.26.0",
     "react-toastify": "^10.0.5",
-    "vite": "^5.3.4"
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
