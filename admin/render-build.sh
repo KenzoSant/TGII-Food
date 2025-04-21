@@ -1,6 +1,5 @@
 #!/bin/bash
 cd admin
-npm install --unsafe-perm
-npm rebuild vite
+npm install --force
 chmod -R 755 node_modules/.bin
 npm run build
