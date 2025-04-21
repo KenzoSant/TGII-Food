@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node_modules/.bin/vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "render-build": "npm install --force && chmod -R 755 node_modules/.bin && npm run build"
   },
   "dependencies": {
     "axios": "^1.7.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "^18.3.1", 
     "react-router-dom": "^6.26.0",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "vite": "^5.3.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
@@ -23,7 +25,9 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
-    "vite": "^5.3.4"
+    "eslint-plugin-react-refresh": "^0.4.7"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
