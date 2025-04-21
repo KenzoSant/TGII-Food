@@ -1,0 +1,98 @@
+.login-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000090;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-popup-container {
+    width: max(23vw, 330px);
+    color: #808080;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 30px;
+    border-radius: 8px;
+    font-size: 14px;
+    animation: fadeIn 0.5s;
+}
+
+.login-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: black;
+    /* Remova o position: relative e left que estavam causando problemas */
+}
+
+.login-popup-header h2 {
+    margin: 0; /* Remove margens padrão do h2 */
+}
+
+.login-popup-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0; /* Ajuste o padding */
+    margin: 0; /* Remova margens negativas */
+}
+
+.login-popup-close-btn img {
+    width: 16px; /* Mantenha consistente com outros ícones */
+    height: 16px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.login-popup-close-btn:hover img {
+    opacity: 1;
+}
+
+/* Mantenha o restante do seu CSS existente abaixo */
+.login-popup-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login-popup-inputs input {
+    outline: none;
+    border: 1px solid #c9c9c9;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.login-popup-container button {
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    background-color: #C0A67D;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.login-popup-condition {
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    margin-top: -15px;
+}
+
+.login-popup-condition input {
+    margin-top: 5px;
+}
+
+.login-popup p span {
+    color: #C0A67D;
+    font-weight: 500;
+    cursor: pointer;
+}
