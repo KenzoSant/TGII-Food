@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node_modules/.bin/vite build",
+    "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "render-build": "npm install --force && chmod -R 755 node_modules/.bin && npm run build"
+     "render-build": "npm install --unsafe-perm && npm run build"
   },
   "dependencies": {
     "axios": "^1.7.3",
@@ -28,6 +28,7 @@
     "eslint-plugin-react-refresh": "^0.4.7"
   },
   "engines": {
-    "node": "18.x"
+    "node": "18.x",
+    "npm": "9.x"
   }
 }
