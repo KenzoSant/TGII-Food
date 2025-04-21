@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 import mongoose from "mongoose";
 
 const placeOrder = async (req, res) => {
-  const frontend_url = process.env.FRONTEND_URL?.trim() || "https://tgii-food-front.onrender.com";
+  const frontend_url = "https://tgii-food-front.onrender.com";
 
   try {
     console.log("Dados recebidos:", req.body);
