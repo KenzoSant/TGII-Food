@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./components/Login/Login";
 
 const App = () => {
-  const url = "https://localhost:4000";
+  const url = "https://tgii-food.onrender.com";
   return (
     <div>
       <ToastContainer />
