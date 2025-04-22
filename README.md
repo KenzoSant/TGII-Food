@@ -1,6 +1,6 @@
 # :stew: TERRA
 
-## TGII - TERRA 
+## TGII 
 - FATEC Campinas
 - Trabalho de Graduação 
 - Projeto Full-Stack
