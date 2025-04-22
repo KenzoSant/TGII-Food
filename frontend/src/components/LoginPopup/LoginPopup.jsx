@@ -4,7 +4,6 @@ import { assets } from "../../assets/frontend_assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import * as jwtDecode from 'jwt-decode';
 
 const LoginPopup = ({ setShowLogin }) => {
   const { url, setToken, setUser } = useContext(StoreContext);
@@ -15,118 +14,92 @@ const LoginPopup = ({ setShowLogin }) => {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onLogin = async (event) => {
     event.preventDefault();
     setIsLoading(true);
   
-    // Normaliza o email para minúsculas antes de enviar
-    const userData = currentState === "Sign Up" 
-      ? { ...data, email: data.email.toLowerCase() } 
-      : data;
+    const userData = {
+      ...data,
+      email: data.email.toLowerCase().trim()
+    };
   
     try {
-      const endpoint = currentState === "Login" ? "/login" : "/register";
-      const response = await axios.post(`${url}/api/user${endpoint}`, userData, {
-        validateStatus: function (status) {
-          return status >= 200 && status < 500;
-        }
-      });
-  
-      if (!response.data) {
-        throw new Error("Resposta vazia do servidor");
-      }
-  
-      if (response.data.success) {
-        const token = response.data.token;
-        setToken(token);
-        localStorage.setItem("token", token);
+      if (currentState === "Sign Up") {
+        // Requisição de cadastro
+        const registerResponse = await axios.post(`${url}/api/user/register`, userData);
         
-        const profileResponse = await axios.get(`${url}/api/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-  
-        if (profileResponse.data.success) {
-          setUser(profileResponse.data.user);
-          toast.success(
-            currentState === "Login" 
-              ? "Login realizado com sucesso!" 
-              : "Cadastro realizado com sucesso!"
-          );
-          setShowLogin(false);
+        if (registerResponse.data.success) {
+          toast.success("Cadastro realizado com sucesso! Faça login para continuar.");
+          setCurrentState("Login"); // Muda para tela de login após cadastro
+          setData({...data, password: ""}); // Limpa apenas a senha
         } else {
-          throw new Error("Falha ao obter perfil do usuário");
+          throw new Error(registerResponse.data.message || "Falha no cadastro");
         }
       } else {
-        const errorMessage = response.data.message || "Operação falhou";
-        
-        // Tratamento especial para mensagem de usuário não existe
-        if (errorMessage.toLowerCase().includes("usuário") || 
-            errorMessage.toLowerCase().includes("user") || 
-            errorMessage.toLowerCase().includes("não existe") ||
-            errorMessage.toLowerCase().includes("not found")) {
-          toast.error("Usuário não existe", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
+        // Requisição de login
+        const loginResponse = await axios.post(`${url}/api/user/login`, {
+          email: userData.email,
+          password: userData.password
+        });
+  
+        if (loginResponse.data.success) {
+          const token = loginResponse.data.token;
+          setToken(token);
+          localStorage.setItem("token", token);
+          
+          const profileResponse = await axios.get(`${url}/api/user/profile`, {
+            headers: { Authorization: `Bearer ${token}` }
           });
+  
+          if (profileResponse.data.success) {
+            setUser(profileResponse.data.user);
+            toast.success("Login realizado com sucesso!");
+            setShowLogin(false);
+          } else {
+            throw new Error("Falha ao obter perfil do usuário");
+          }
         } else {
-          toast.error(errorMessage, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+          throw new Error(loginResponse.data.message || "Credenciais inválidas");
         }
       }
     } catch (error) {
-      console.error("Erro no login:", error);
+      console.error("Erro:", error);
       
-      let errorMessage = "Erro ao processar login";
+      let errorMessage = "Erro ao processar a requisição";
       
       if (error.response) {
-        errorMessage = error.response.data?.message || 
-                     error.response.statusText || 
-                     `Erro ${error.response.status}`;
-      } else if (error.request) {
-        errorMessage = "Sem resposta do servidor - verifique sua conexão";
+        // Tratamento específico para erros de resposta
+        if (error.response.status === 400) {
+          errorMessage = "Dados inválidos enviados";
+        } else if (error.response.status === 409) {
+          errorMessage = "Este e-mail já está cadastrado";
+        } else {
+          errorMessage = error.response.data?.message || error.message;
+        }
       } else {
-        errorMessage = error.message || "Erro ao processar requisição";
+        errorMessage = error.message;
       }
   
-      if (errorMessage.toLowerCase().includes("usuário") || 
-          errorMessage.toLowerCase().includes("user") || 
-          errorMessage.toLowerCase().includes("não existe") ||
-          errorMessage.toLowerCase().includes("not found")) {
-        errorMessage = "Usuário não existe";
-      }
-  
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Adicione esta função para normalizar o email durante a digitação
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setData((prev) => ({ 
       ...prev, 
-      [name]: name === "email" ? value.toLowerCase() : value 
+      [name]: name === "email" ? value.toLowerCase().trim() : value 
     }));
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="login-popup-overlay">
       <div className="login-popup">
@@ -164,15 +137,26 @@ const LoginPopup = ({ setShowLogin }) => {
               required
               disabled={isLoading}
             />
-            <input
-              name="password"
-              onChange={onChangeHandler}
-              value={data.password}
-              type="password"
-              placeholder="Sua senha"
-              required
-              disabled={isLoading}
-            />
+            <div className="password-input-container">
+              <input
+                name="password"
+                onChange={onChangeHandler}
+                value={data.password}
+                type={showPassword ? "text" : "password"}
+                placeholder="Sua senha"
+                required
+                disabled={isLoading}
+              />
+              <span 
+                className="password-toggle"
+                onClick={togglePasswordVisibility}
+              >
+                <img 
+                  src={showPassword ? assets.eye_icon : assets.eye_slash_icon} 
+                  alt={showPassword ? "Ocultar senha" : "Mostrar senha"} 
+                />
+              </span>
+            </div>
           </div>
           
           <button type="submit" disabled={isLoading}>

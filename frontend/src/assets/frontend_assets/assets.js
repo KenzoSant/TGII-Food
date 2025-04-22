@@ -28,6 +28,8 @@ import about3 from './about3.jpg'
 import banner from './banner.gif'
 import chef1 from "./chef1.jpg";
 import chef2 from "./chef2.jpg";
+import eye_icon  from "./eye_icon.png";
+import eye_slash_icon from "./eye_slash_icon.png";
 
 export const assets = {
     logo,
@@ -52,7 +54,9 @@ export const assets = {
     about1,
     about2,
     about3,
-    banner
+    banner,
+    eye_slash_icon,
+    eye_icon
 }
 
 export const menu_list = [

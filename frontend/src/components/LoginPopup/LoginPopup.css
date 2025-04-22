@@ -96,3 +96,42 @@
     font-weight: 500;
     cursor: pointer;
 }
+
+.password-input-container {
+    position: relative; /* Permite posicionar o ícone absolutamente dentro deste container */
+    width: 100%; /* Garante que o container ocupe toda a largura disponível */
+}
+
+.password-input-container input {
+    padding-right: 40px; /* Espaço para o ícone não sobrepor o texto */
+    width: 100%; /* Garante que o input ocupe toda a largura do container */
+    box-sizing: border-box; /* Inclui padding na largura total */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px; /* Distância da borda direita */
+    top: 50%; /* Posiciona no meio vertical */
+    transform: translateY(-50%); /* Ajuste fino para centralizar verticalmente */
+    cursor: pointer;
+    width: 24px; /* Largura do ícone */
+    height: 24px; /* Altura do ícone */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.password-toggle:hover {
+    opacity: 1;
+}
+
+.password-toggle img {
+    width: 100%; /* Faz o ícone preencher o container */
+    height: 100%;
+    object-fit: contain; /* Garante que a imagem mantenha suas proporções */
+}
