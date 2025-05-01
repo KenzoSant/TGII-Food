@@ -65,37 +65,53 @@ const removeFood = async (req, res) => {
   }
 };
 
-// No foodController.js
 const editFood = async (req, res) => {
   try {
-    let userData = await userModel.findById(req.body.userId);
-    if (!userData || userData.role !== "admin") {
-      return res.json({ success: false, message: "Você não tem permissão para editar" });
+    // Verifica se o usuário é admin
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Acesso negado: apenas administradores podem editar pratos" 
+      });
     }
 
-    let updateData = {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "ID do prato não fornecido" 
+      });
+    }
+
+    const updateData = {
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
     };
 
-    // Se uma nova imagem foi enviada
     if (req.file) {
-      // Remove a imagem antiga
-      const oldFood = await foodModel.findById(req.body.id);
-      if (oldFood.image) {
+      const oldFood = await foodModel.findById(id);
+      if (oldFood?.image) {
         fs.unlink(`uploads/${oldFood.image}`, () => {});
       }
-      
       updateData.image = req.file.filename;
     }
 
-    await foodModel.findByIdAndUpdate(req.body.id, updateData);
-    res.json({ success: true, message: "Prato atualizado com sucesso" });
+    const updatedFood = await foodModel.findByIdAndUpdate(id, updateData, { new: true });
+    
+    res.json({ 
+      success: true, 
+      message: "Prato atualizado com sucesso",
+      data: updatedFood 
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Erro ao editar o prato" });
+    console.error("Erro ao editar prato:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Erro interno ao editar prato" 
+    });
   }
 };
 
