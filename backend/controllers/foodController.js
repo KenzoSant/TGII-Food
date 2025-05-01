@@ -39,7 +39,7 @@ const listFood = async (req, res) => {
         description: food.description,
         price: food.price,
         category: food.category,
-        image: `${food.image}` // Garanta que o caminho da imagem está correto
+        image: `${food.image}` 
       }))
     });
   } catch (error) {
@@ -65,4 +65,39 @@ const removeFood = async (req, res) => {
   }
 };
 
-export { addFood, listFood, removeFood };
+// No foodController.js
+const editFood = async (req, res) => {
+  try {
+    let userData = await userModel.findById(req.body.userId);
+    if (!userData || userData.role !== "admin") {
+      return res.json({ success: false, message: "Você não tem permissão para editar" });
+    }
+
+    let updateData = {
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+    };
+
+    // Se uma nova imagem foi enviada
+    if (req.file) {
+      // Remove a imagem antiga
+      const oldFood = await foodModel.findById(req.body.id);
+      if (oldFood.image) {
+        fs.unlink(`uploads/${oldFood.image}`, () => {});
+      }
+      
+      updateData.image = req.file.filename;
+    }
+
+    await foodModel.findByIdAndUpdate(req.body.id, updateData);
+    res.json({ success: true, message: "Prato atualizado com sucesso" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Erro ao editar o prato" });
+  }
+};
+
+export { addFood, listFood, removeFood, editFood };
+
