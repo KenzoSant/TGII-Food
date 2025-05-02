@@ -1,15 +1,14 @@
 import express from "express";
 import { createReservation, getReservations, updateReservation } from "../controllers/reservationController.js";
 import authMiddleware from "../middleware/auth.js";
-import adminMiddleware from "../middleware/admin.js"; // Novo middleware
 
 const router = express.Router();
 
-// Rota pública para criação de reservas
+// Change this route to require authentication
 router.post("/", authMiddleware, createReservation); 
 
 // Rotas protegidas para admin
-router.get("/", authMiddleware, adminMiddleware, getReservations);
-router.put("/:id", authMiddleware, adminMiddleware, updateReservation);
+router.get("/", authMiddleware, getReservations);
+router.put("/:id", authMiddleware, updateReservation);
 
 export default router;

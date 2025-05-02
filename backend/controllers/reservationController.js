@@ -41,7 +41,7 @@ const createReservation = async (req, res) => {
 };
   
 
-export const getReservations = async (req, res) => {
+const getReservations = async (req, res) => {
     try {
       console.log("Usuário solicitando reservas:", req.user); // Log para debug
       
