@@ -41,15 +41,40 @@ const createReservation = async (req, res) => {
 };
   
 
-// Obter todas as reservas
-const getReservations = async (req, res) => {
-  try {
-    const reservations = await Reservation.find().sort({ date: 1, time: 1 });
-    res.json(reservations);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+export const getReservations = async (req, res) => {
+    try {
+      console.log("Usuário solicitando reservas:", req.user); // Log para debug
+      
+      // Adicione filtros se necessário (por data, status, etc.)
+      const query = {};
+      
+      // Busca as reservas ordenadas por data e hora
+      const reservations = await Reservation.find(query)
+        .sort({ date: 1, time: 1 })
+        .lean(); // Usando lean() para melhor performance
+        
+      console.log(`Total de reservas encontradas: ${reservations.length}`); // Debug
+      
+      // Formata as datas para exibição
+      const formattedReservations = reservations.map(res => ({
+        ...res,
+        formattedDate: new Date(res.date).toLocaleDateString('pt-BR')
+      }));
+      
+      res.json({
+        success: true,
+        data: formattedReservations
+      });
+      
+    } catch (error) {
+      console.error("Erro no getReservations:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Erro ao buscar reservas",
+        error: error.message
+      });
+    }
+  };
 
 // Atualizar status da reserva
 const updateReservation = async (req, res) => {

@@ -85,7 +85,7 @@ const PlaceOrder = () => {
 
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       }
     }
   };
@@ -105,14 +105,14 @@ const PlaceOrder = () => {
     const currentToken = localStorage.getItem('token') || token;
     if (!currentToken) {
       toast.error("Por favor, faça login primeiro");
-      navigate("/login");
+      navigate("/");
       return;
     }
 
     try {
       if (!token) {
         toast.error("Por favor, faça login primeiro");
-        navigate("/login");
+        navigate("/");
         return;
       }
 
@@ -158,7 +158,7 @@ const PlaceOrder = () => {
 
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       }
     }
   };
@@ -167,7 +167,7 @@ const PlaceOrder = () => {
     const checkAuth = async () => {
       if (!token) {
         toast.error("Por favor, faça login primeiro");
-        navigate("/login");
+        navigate("/");
         return;
       }
 
@@ -181,13 +181,13 @@ const PlaceOrder = () => {
         } else {
           toast.error("Sessão expirada");
           localStorage.removeItem("token");
-          navigate("/login");
+          navigate("/");
         }
       } catch (error) {
         console.error("Erro ao verificar autenticação:", error);
         toast.error("Erro ao carregar dados do usuário");
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       } finally {
         setIsLoading(false);
       }

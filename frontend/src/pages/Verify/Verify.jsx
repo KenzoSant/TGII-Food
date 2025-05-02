@@ -19,7 +19,7 @@ const Verify = () => {
                     const currentToken = token || localStorage.getItem('token');
                     if (!currentToken) {
                         toast.error("Sessão expirada. Por favor, faça login novamente.");
-                        navigate("/login");
+                        navigate("/");
                         return;
                     }
 

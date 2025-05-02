@@ -6,64 +6,63 @@ import { StoreContext } from '../../context/StoreContext';
 import './AdminReservations.css';
 
 const AdminReservations = () => {
-  const navigate = useNavigate();
-  const { url, token, admin } = useContext(StoreContext);
-  const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Verifica se é admin antes de carregar
-    if (!admin || !token) {
-      toast.error('Acesso restrito a administradores');
-      navigate('/');
-      return;
-    }
-    fetchReservations();
-  }, [admin, token, navigate]);
-
-  const fetchReservations = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${url}/api/reservations`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+    const navigate = useNavigate();
+    const { url, token, admin } = useContext(StoreContext);
+    const [reservations, setReservations] = useState([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      if (!admin) {
+        toast.error('Acesso restrito a administradores');
+        navigate('/');
+        return;
+      }
+      fetchReservations();
+    }, [admin, navigate]);
+  
+    const fetchReservations = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${url}/api/reservations`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log("Resposta da API:", response); // Para debug
+        
+        // Verifica diferentes formatos de resposta
+        const data = response.data.data || response.data;
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Formato de dados inválido');
         }
-      });
-      
-      console.log("Resposta completa da API:", response); // Debug detalhado
-      
-      // Verifica se a resposta tem a estrutura esperada
-      if (Array.isArray(response.data)) {
-        setReservations(response.data);
-      } else if (response.data.data && Array.isArray(response.data.data)) {
-        setReservations(response.data.data);
-      } else {
-        throw new Error('Formato de dados inválido');
+        
+        setReservations(data);
+      } catch (error) {
+        console.error("Erro detalhado:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
+        
+        if (error.response?.status === 401) {
+          toast.error('Sessão expirada. Faça login novamente.');
+          navigate('/login');
+        } else {
+          toast.error(error.response?.data?.message || 'Erro ao carregar reservas');
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Erro detalhado:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      
-      if (error.response?.status === 401) {
-        toast.error('Sessão expirada. Faça login novamente.');
-        navigate('/login');
-      } else {
-        toast.error(error.response?.data?.message || 'Erro ao carregar reservas');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
   const updateStatus = async (id, status) => {
     try {
       await axios.put(`${url}/api/reservations/${id}`, { status }, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
