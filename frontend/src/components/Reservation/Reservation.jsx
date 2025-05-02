@@ -32,11 +32,37 @@ const Reservation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        await axios.post(`${url}/api/reservations`, formData);
-      toast.success('Reserva enviada com sucesso! Aguarde confirmação.');
-      navigate('/');
+      const reservationData = {
+        customerName: formData.customerName,
+        email: formData.email,
+        phone: formData.phone,
+        date: formData.date.toISOString().split('T')[0],
+        time: formData.time,
+        people: formData.people,
+        notes: formData.notes
+      };
+  
+      console.log("Enviando para:", `${url}/api/reservations`);
+      
+      const response = await axios.post(`${url}/api/reservations`, reservationData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log("Resposta do servidor:", response.data);
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        navigate("/");
+      }
     } catch (error) {
-      toast.error('Erro ao enviar reserva. Tente novamente.');
+      console.error("Detalhes do erro:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      toast.error(error.response?.data?.message || "Erro ao enviar reserva");
     }
   };
 
