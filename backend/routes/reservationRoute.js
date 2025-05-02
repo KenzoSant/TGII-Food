@@ -4,8 +4,8 @@ import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Rota pública para criação de reservas
-router.post("/", createReservation); 
+// Change this route to require authentication
+router.post("/", authMiddleware, createReservation); 
 
 // Rotas protegidas para admin
 router.get("/", authMiddleware, getReservations);

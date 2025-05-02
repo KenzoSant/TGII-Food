@@ -12,6 +12,7 @@ const reservationSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'rejected'], 
     default: 'pending' 
   },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Add user reference
   createdAt: { type: Date, default: Date.now }
 });
 
