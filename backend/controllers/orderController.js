@@ -38,7 +38,7 @@ const placeOrder = async (req, res) => {
       diningOption: req.body.diningOption,
       ...(req.body.diningOption === 'dine-in' && { tableNumber: req.body.tableNumber }),
       ...(req.body.diningOption === 'delivery' && { address: req.body.address }),
-      status: "Food Processing",
+      status: "Preparando",
       payment: false
     });
 
@@ -184,8 +184,8 @@ const listOrders = async (req, res) => {
 
 // api for updating status
 const statusOptions = {
-  'delivery': ["Food Processing", "Out for delivery", "Delivered"],
-  'dine-in': ["Food Processing", "Ready to Serve", "Served", "Completed"]
+  'delivery': ["Preparando", "Saiu para entrega", "Entregue"],
+  'dine-in': ["Preparando", "Pronto para servir", "Served", "Finalizado"]
 };
 
 const updateStatus = async (req, res) => {

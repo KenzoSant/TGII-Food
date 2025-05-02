@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
   const navigate = useNavigate();
-  const { token, admin, url, user } = useContext(StoreContext); // Adicionado user
+  const { token, admin, url, user } = useContext(StoreContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,12 +16,12 @@ const Orders = () => {
     try {
       setLoading(true);
       const response = await axios.get(url + "/api/order/list", {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       });
-  
+
       if (response.data.success) {
         setOrders(response.data.data);
       } else {
@@ -29,7 +29,7 @@ const Orders = () => {
       }
     } catch (error) {
       console.error("Erro completo:", error);
-      
+
       if (error.response?.status === 401) {
         toast.error("Faça login novamente");
         navigate("/login");
@@ -47,18 +47,18 @@ const Orders = () => {
     try {
       const response = await axios.post(
         url + "/api/order/status",
-        { 
-          orderId, 
+        {
+          orderId,
           status: event.target.value
         },
-        { 
-          headers: { 
+        {
+          headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
-          } 
+          }
         }
       );
-      
+
       if (response.data.success) {
         toast.success(response.data.message);
         await fetchAllOrder();
@@ -76,7 +76,7 @@ const Orders = () => {
       navigate("/login");
       return;
     }
-    
+
     if (admin) {
       fetchAllOrder();
     } else {
@@ -100,20 +100,22 @@ const Orders = () => {
               <div>
                 <p className="order-item-food">
                   {order.diningOption === 'dine-in' && (
-                    <span className="order-item-table">Mesa: {order.tableNumber}</span>
+                    <span className="order-item-table">{order.userId?.name || "Nome não disponível"}<br></br>Mesa: {order.tableNumber}<br></br><br></br></span>
+                    
+
                   )}
                   {order.items.map((item, index) => (
-                    <span key={item._id || index}>
+                    <span key={item._id || index}> 
                       {item.name} x {item.quantity}
                       {index < order.items.length - 1 ? ", " : ""}
                     </span>
                   ))}
                 </p>
-                
+
                 {order.address && (
                   <>
                     <p className="order-item-name">
-                      {order.address.firstName + " " + order.address.lastName}
+                      {order.address.firstName}
                     </p>
                     <div className="order-item-address">
                       <p>{order.address.street},</p>
@@ -131,13 +133,13 @@ const Orders = () => {
                 onChange={(event) => statusHandler(event, order._id)}
                 value={order.status}
               >
-                <option value="Food Processing">Preparando</option>
-                <option value="Out for delivery">Saiu para entrega</option>
-                <option value="Delivered">Entregue</option>
+                <option value="Preparando">Preparando</option>
+                <option value="Saiu para entrega">Saiu para entrega</option>
+                <option value="Entregue">Entregue</option>
                 {order.diningOption === 'dine-in' && (
                   <>
-                    <option value="Ready to Serve">Pronto para servir</option>
-                    <option value="Completed">Finalizado</option>
+                    <option value="Pronto para servir">Pronto para servir</option>
+                    <option value="Finalizado">Finalizado</option>
                   </>
                 )}
               </select>

@@ -6,7 +6,7 @@ import FoodDisplay from '../../components/FoodDisplay/FoodDisplay'
 import About from '../../components/About/About'
 import Banner from '../../components/Banner/Banner'
 import Chefs from '../../components/Chefs/Chefs'
-import AppDownload from '../../components/AppDownload/AppDownload'
+import Reservation from '../../components/Reservation/Reservation'
 
 const Home = () => {
   const [category,setCategory]=useState("All");
@@ -19,6 +19,7 @@ const Home = () => {
       <ExploreMenu category={category} setCategory={setCategory} />
       <FoodDisplay category={category}/>
       <Chefs />
+      <Reservation/>
       {/* <AppDownload/> */}
     </div>
   )

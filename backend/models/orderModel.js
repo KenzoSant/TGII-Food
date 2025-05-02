@@ -31,7 +31,7 @@ const orderSchema = new mongoose.Schema({
     enum: ['delivery', 'dine-in'],
     required: true 
   },
-  status: { type: String, default: "Food Processing" },
+  status: { type: String, default: "Preparando" },
   payment: { type: Boolean, default: false }
 }, { timestamps: true });
 
