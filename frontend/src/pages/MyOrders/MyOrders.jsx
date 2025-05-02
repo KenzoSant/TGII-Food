@@ -37,7 +37,7 @@ const MyOrders = () => {
       setError(error.response?.data?.message || error.message);
       if (error.response?.status === 401) {
         localStorage.removeItem("token");
-        navigate("/login");
+        navigate("/");
       }
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ const MyOrders = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/login");
+      navigate("/");
       return;
     }
     if (user) {

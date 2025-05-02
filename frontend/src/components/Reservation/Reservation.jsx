@@ -56,7 +56,7 @@ const Reservation = () => {
             console.error("Error details:", error);
             if (error.response?.status === 401) {
                 toast.error("Por favor, faça login para reservar uma mesa");
-                navigate("/login");
+                navigate("/");
             } else {
                 toast.error(error.response?.data?.message || "Erro ao enviar reserva");
             }

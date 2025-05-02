@@ -32,7 +32,7 @@ const Orders = () => {
 
       if (error.response?.status === 401) {
         toast.error("Faça login novamente");
-        navigate("/login");
+        navigate("/");
       } else if (error.response?.status === 403) {
         toast.error("Acesso restrito a administradores");
       } else {
