@@ -45,7 +45,6 @@ const Reservation = () => {
             const response = await axios.post(`${url}/api/reservations`, reservationData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
                 }
             });
 
@@ -63,13 +62,6 @@ const Reservation = () => {
             }
         }
     };
-
-    useEffect(() => {
-        if (!token) {
-            toast.warning("Por favor, faça login para reservar uma mesa");
-            navigate("/login");
-        }
-    }, [token, navigate]);
 
     return (
         <div className="reservation-container">
