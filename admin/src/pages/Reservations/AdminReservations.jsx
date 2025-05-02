@@ -17,7 +17,7 @@ const AdminReservations = () => {
     try {
       const response = await axios.get(`${url}/api/reservations`, {
         headers: {
-          'Authorization': `Bearer ${token}` // Adicionado header de autenticação
+            Authorization: `Bearer ${token}`, // Adicionado header de autenticação
         }
       });
       
@@ -36,7 +36,7 @@ const AdminReservations = () => {
     try {
       await axios.put(`${url}/api/reservations/${id}`, { status }, {
         headers: {
-          'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
         }
       });
       toast.success('Status atualizado!');

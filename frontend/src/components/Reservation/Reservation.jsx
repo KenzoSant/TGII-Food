@@ -45,6 +45,7 @@ const Reservation = () => {
             const response = await axios.post(`${url}/api/reservations`, reservationData, {
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
