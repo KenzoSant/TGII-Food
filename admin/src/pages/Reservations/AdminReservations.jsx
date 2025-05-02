@@ -6,73 +6,80 @@ import { StoreContext } from '../../context/StoreContext';
 import './AdminReservations.css';
 
 const AdminReservations = () => {
-    const navigate = useNavigate();
-    const { url, token, admin } = useContext(StoreContext);
-    const [reservations, setReservations] = useState([]);
-    const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      if (!admin) {
+  const navigate = useNavigate();
+  const { url, token, admin } = useContext(StoreContext);
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchReservations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await axios.get(`${url}/api/reservations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.data.success) {
+        setReservations(response.data.data);
+      } else {
+        throw new Error(response.data.message || 'Erro ao carregar reservas');
+      }
+    } catch (error) {
+      console.error("Erro ao buscar reservas:", error);
+      setError(error);
+      
+      if (error.response?.status === 401) {
+        toast.error('Sessão expirada. Faça login novamente.');
+        navigate('/login');
+      } else if (error.response?.status === 403) {
         toast.error('Acesso restrito a administradores');
         navigate('/');
-        return;
+      } else {
+        toast.error(error.response?.data?.message || 'Erro ao carregar reservas');
       }
-      fetchReservations();
-    }, [admin, navigate]);
-  
-    const fetchReservations = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${url}/api/reservations`, {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const response = await axios.put(
+        `${url}/api/reservations/${id}`,
+        { status },
+        {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
-        });
-        
-        console.log("Resposta da API:", response); // Para debug
-        
-        // Verifica diferentes formatos de resposta
-        const data = response.data.data || response.data;
-        
-        if (!Array.isArray(data)) {
-          throw new Error('Formato de dados inválido');
         }
-        
-        setReservations(data);
-      } catch (error) {
-        console.error("Erro detalhado:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status
-        });
-        
-        if (error.response?.status === 401) {
-          toast.error('Sessão expirada. Faça login novamente.');
-          navigate('/login');
-        } else {
-          toast.error(error.response?.data?.message || 'Erro ao carregar reservas');
-        }
-      } finally {
-        setLoading(false);
+      );
+      
+      if (response.data.success) {
+        toast.success('Status atualizado com sucesso!');
+        fetchReservations();
+      } else {
+        throw new Error(response.data.message || 'Erro ao atualizar status');
       }
-    };
-
-  const updateStatus = async (id, status) => {
-    try {
-      await axios.put(`${url}/api/reservations/${id}`, { status }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      toast.success('Status atualizado com sucesso!');
-      fetchReservations(); // Recarrega a lista após atualização
     } catch (error) {
-      console.error("Erro ao atualizar:", error);
+      console.error("Erro ao atualizar status:", error);
       toast.error(error.response?.data?.message || 'Erro ao atualizar status');
     }
   };
+
+  useEffect(() => {
+    if (!admin) {
+      toast.error('Acesso restrito a administradores');
+      navigate('/');
+      return;
+    }
+    fetchReservations();
+  }, [admin, navigate, token, url]);
 
   if (loading) {
     return (
@@ -84,65 +91,81 @@ const AdminReservations = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="admin-container">
+        <h2>Gerenciamento de Reservas</h2>
+        <div className="error-message">
+          <p>Erro ao carregar reservas: {error.message}</p>
+          <button onClick={fetchReservations} className="retry-btn">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-container">
       <h2>Gerenciamento de Reservas</h2>
       
+      <div className="reservations-header">
+        <p>Total de reservas: {reservations.length}</p>
+        <button onClick={fetchReservations} className="refresh-btn">
+          Atualizar lista
+        </button>
+      </div>
+      
       {reservations.length === 0 ? (
         <div className="no-reservations">
           <p>Nenhuma reserva encontrada.</p>
-          <button onClick={fetchReservations} className="refresh-btn">
-            Recarregar
-          </button>
         </div>
       ) : (
-        <table className="reservations-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Data</th>
-              <th>Horário</th>
-              <th>Pessoas</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reservations.map(reservation => (
-              <tr key={reservation._id}>
-                <td>{reservation.customerName}</td>
-                <td>{reservation.email}</td>
-                <td>{new Date(reservation.date).toLocaleDateString('pt-BR')}</td>
-                <td>{reservation.time}</td>
-                <td>{reservation.people}</td>
-                <td>
-                  <span className={`status-badge ${reservation.status}`}>
-                    {reservation.status === 'pending' && 'Pendente'}
-                    {reservation.status === 'confirmed' && 'Confirmado'}
-                    {reservation.status === 'rejected' && 'Rejeitado'}
-                  </span>
-                </td>
-                <td className="actions">
-                  <button
-                    onClick={() => updateStatus(reservation._id, 'confirmed')}
-                    className="confirm-btn"
-                    disabled={reservation.status === 'confirmed'}
-                  >
-                    Confirmar
-                  </button>
-                  <button
-                    onClick={() => updateStatus(reservation._id, 'rejected')}
-                    className="reject-btn"
-                    disabled={reservation.status === 'rejected'}
-                  >
-                    Rejeitar
-                  </button>
-                </td>
+        <div className="reservations-table-container">
+          <table className="reservations-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Email</th>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Pessoas</th>
+                <th>Status</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reservations.map(reservation => (
+                <tr key={reservation._id}>
+                  <td>{reservation.userId?.name || reservation.customerName}</td>
+                  <td>{reservation.userId?.email || reservation.email}</td>
+                  <td>{new Date(reservation.date).toLocaleDateString('pt-BR')}</td>
+                  <td>{reservation.time}</td>
+                  <td>{reservation.people}</td>
+                  <td>
+                    <span className={`status-badge ${reservation.status}`}>
+                      {reservation.status === 'pending' && 'Pendente'}
+                      {reservation.status === 'confirmed' && 'Confirmado'}
+                      {reservation.status === 'rejected' && 'Rejeitado'}
+                      {reservation.status === 'canceled' && 'Cancelado'}
+                    </span>
+                  </td>
+                  <td className="actions">
+                    <select
+                      value={reservation.status}
+                      onChange={(e) => updateStatus(reservation._id, e.target.value)}
+                    >
+                      <option value="pending">Pendente</option>
+                      <option value="confirmed">Confirmado</option>
+                      <option value="rejected">Rejeitado</option>
+                      <option value="canceled">Cancelado</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

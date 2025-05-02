@@ -1,93 +1,107 @@
 import Reservation from '../models/reservationModel.js';
+import userModel from '../models/userModel.js';
 
-const createReservation = async (req, res) => {
-    try {
-        // Check if user is authenticated
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: "Authentication required"
-            });
-        }
-
-        const reservation = new Reservation({
-            customerName: req.body.customerName,
-            email: req.body.email,
-            phone: req.body.phone,
-            date: new Date(req.body.date),
-            time: req.body.time,
-            people: req.body.people,
-            notes: req.body.notes || "",
-            status: "pending",
-            user: req.user._id // Associate reservation with user
-        });
-
-        await reservation.save();
-        
-        return res.status(201).json({
-            success: true,
-            message: "Reserva criada com sucesso",
-            data: reservation
-        });
-        
-    } catch (error) {
-        console.error("Error:", error);
-        return res.status(400).json({
-            success: false,
-            message: "Erro ao criar reserva",
-            error: error.message
-        });
-    }
-};
-  
-
-const getReservations = async (req, res) => {
-    try {
-      console.log("Usuário solicitando reservas:", req.user); // Log para debug
-      
-      // Adicione filtros se necessário (por data, status, etc.)
-      const query = {};
-      
-      // Busca as reservas ordenadas por data e hora
-      const reservations = await Reservation.find(query)
-        .sort({ date: 1, time: 1 })
-        .lean(); // Usando lean() para melhor performance
-        
-      console.log(`Total de reservas encontradas: ${reservations.length}`); // Debug
-      
-      // Formata as datas para exibição
-      const formattedReservations = reservations.map(res => ({
-        ...res,
-        formattedDate: new Date(res.date).toLocaleDateString('pt-BR')
-      }));
-      
-      res.json({
-        success: true,
-        data: formattedReservations
-      });
-      
-    } catch (error) {
-      console.error("Erro no getReservations:", error);
-      res.status(500).json({ 
+// Criar nova reserva (requer autenticação)
+ const createReservation = async (req, res) => {
+  try {
+    // Verificação adicional dos dados
+    if (!req.body.date || !req.body.time || !req.body.people) {
+      return res.status(400).json({
         success: false,
-        message: "Erro ao buscar reservas",
-        error: error.message
+        message: "Dados incompletos para a reserva"
       });
     }
-  };
 
-// Atualizar status da reserva
-const updateReservation = async (req, res) => {
+    const reservation = new Reservation({
+      userId: req.user.id, // Associando ao usuário logado
+      customerName: req.body.customerName,
+      email: req.body.email,
+      phone: req.body.phone,
+      date: new Date(req.body.date),
+      time: req.body.time,
+      people: req.body.people,
+      notes: req.body.notes || "",
+      status: "pending"
+    });
+
+    await reservation.save();
+    
+    return res.status(201).json({
+      success: true,
+      message: "Reserva criada com sucesso",
+      data: reservation
+    });
+    
+  } catch (error) {
+    console.error("Erro ao criar reserva:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Erro ao criar reserva",
+      error: error.message
+    });
+  }
+};
+
+// Obter todas as reservas (apenas admin)
+ const getReservations = async (req, res) => {
+  try {
+    // Busca todas as reservas com informações do usuário
+    const reservations = await Reservation.find({})
+      .populate('userId', 'name email') // Popula dados do usuário
+      .sort({ date: 1, time: 1 });
+
+    res.json({ 
+      success: true,
+      data: reservations 
+    });
+  } catch (error) {
+    console.error("Erro ao buscar reservas:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Erro ao buscar reservas",
+      error: error.message 
+    });
+  }
+};
+
+// Atualizar status da reserva (apenas admin)
+ const updateReservation = async (req, res) => {
   try {
     const { status } = req.body;
+    const validStatuses = ['pending', 'confirmed', 'rejected', 'canceled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Status inválido" 
+      });
+    }
+
     const reservation = await Reservation.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
-    );
-    res.json(reservation);
+    ).populate('userId', 'name email');
+
+    if (!reservation) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Reserva não encontrada" 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      message: "Status da reserva atualizado",
+      data: reservation 
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Erro ao atualizar reserva:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Erro ao atualizar reserva",
+      error: error.message 
+    });
   }
 };
 
