@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", authMiddleware, createReservation); 
 
 // Rotas protegidas para admin
-router.get("/", authMiddleware, getReservations);
+router.get("/reservations", authMiddleware, getReservations);
 router.put("/:id", authMiddleware, updateReservation);
 
 export default router;

@@ -19,10 +19,12 @@ const AdminReservations = () => {
       
       const response = await axios.get(`${url}/api/reservations`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+
+      console.log(response.data);
       
       if (response.data.success) {
         setReservations(response.data.data);
@@ -54,7 +56,7 @@ const AdminReservations = () => {
         { status },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -106,7 +108,7 @@ const AdminReservations = () => {
   }
 
   return (
-    <div className="admin-container">
+    <div className="admin-container reservations">
       <h2>Gerenciamento de Reservas</h2>
       
       <div className="reservations-header">
