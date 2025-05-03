@@ -1,20 +1,22 @@
-.my-orders{
+.my-orders {
     margin: 150px 0px;
 }
-.my-orders .container{
+
+.my-orders .container {
     display: flex;
     flex-direction: column;
     gap: 20px;
     margin-top: 30px;
 }
 
-.my-orders h2{
+.my-orders h2 {
     font-size: 3rem;
     margin-bottom: 1.5rem;
-    color: #2C170A; /* Texto branco para contraste */
+    color: #2C170A;
+    /* Texto branco para contraste */
 }
 
-.my-orders-order{
+.my-orders-order {
     display: grid;
     grid-template-columns: 0.5fr 2fr 1fr 1fr 2fr 1fr;
     align-items: center;
@@ -24,17 +26,42 @@
     color: #2C170A;
     border: 1.5px solid #cdbfa7;
 }
-.my-orders-order img{
+
+.my-orders-order img {
     width: 50px;
 }
-.my-orders-order p span{
-    color: green;
+
+.status-preparando {
+    color: #ffc107;
+    /* laranja */
 }
-.my-orders-order p b{
+
+.status-pronto-para-servir {
+    color: #2196F3;
+    /* roxo */
+}
+
+.status-saiu-para-entrega {
+    color: #2196F3;
+    /* azul */
+}
+
+.status-entregue {
+    color: #4CAF50;
+    /* verde */
+}
+
+.status-finalizado {
+    color: #4CAF50;
+    /* cinza */
+}
+
+.my-orders-order p b {
     font-weight: 500;
     color: #2C170A;
 }
-.my-orders-order button{
+
+.my-orders-order button {
     border: none;
     padding: 12px 0px;
     border-radius: 4px;
@@ -42,13 +69,15 @@
     cursor: pointer;
     color: #2C170A;
 }
+
 @media (max-width:900px) {
-    .my-orders-order{
+    .my-orders-order {
         grid-template-columns: 1fr 2fr 1fr;
         row-gap: 5px;
         font-size: 12px;
     }
-    .my-orders-order button{
+
+    .my-orders-order button {
         font-size: 10px;
     }
 }

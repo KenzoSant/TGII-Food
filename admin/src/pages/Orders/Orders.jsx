@@ -11,10 +11,12 @@ const Orders = () => {
   const { token, admin, url, user } = useContext(StoreContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchAllOrder = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await axios.get(url + "/api/order/list", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -25,10 +27,11 @@ const Orders = () => {
       if (response.data.success) {
         setOrders(response.data.data);
       } else {
-        toast.error(response.data.message);
+        throw new Error(response.data.message);
       }
     } catch (error) {
-      console.error("Erro completo:", error);
+      console.error("Erro ao buscar pedidos:", error);
+      setError(error);
 
       if (error.response?.status === 401) {
         toast.error("Faça login novamente");
@@ -85,68 +88,111 @@ const Orders = () => {
     }
   }, [token, admin, navigate]);
 
-  if (loading) return <div className="loading">Carregando pedidos...</div>;
+  if (loading) {
+    return (
+      <div className="admin-container">
+        <h2>Painel de Pedidos</h2>
+        <div className="loading-spinner"></div>
+        <p>Carregando pedidos...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-container">
+        <h2>Painel de Pedidos</h2>
+        <div className="error-message">
+          <p>Erro ao carregar pedidos: {error.message}</p>
+          <button onClick={fetchAllOrder} className="retry-btn">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="order add">
-      <h3>Painel de Pedidos</h3>
-      <div className="order-list">
-        {orders.length === 0 ? (
-          <p className="no-orders">Nenhum pedido encontrado</p>
-        ) : (
-          orders.map((order) => (
-            <div key={order._id} className="order-item">
-              <img src={assets.parcel_icon} alt="Ícone de pedido" />
-              <div>
-                <p className="order-item-food">
-                  {order.diningOption === 'dine-in' && (
-                    <span className="order-item-table">{order.userId?.name || "Nome não disponível"}<br></br>Mesa: {order.tableNumber}<br></br><br></br></span>
-                    
+    <div className="admin-container">
+      <h2>Painel de Pedidos</h2>
 
-                  )}
-                  {order.items.map((item, index) => (
-                    <span key={item._id || index}> 
-                      {item.name} x {item.quantity}
-                      {index < order.items.length - 1 ? ", " : ""}
-                    </span>
-                  ))}
-                </p>
-
-                {order.address && (
-                  <>
-                    <p className="order-item-name">
-                      {order.address.firstName}
-                    </p>
-                    <div className="order-item-address">
-                      <p>{order.address.street},</p>
-                      <p>
-                        {order.address.city}, {order.address.state}, {order.address.zipcode}
-                      </p>
-                    </div>
-                    <p className="order-item-phone">{order.address.phone}</p>
-                  </>
-                )}
-              </div>
-              <p>Itens: {order.items.length}</p>
-              <p>R$ {order.amount.toFixed(2)}</p>
-              <select
-                onChange={(event) => statusHandler(event, order._id)}
-                value={order.status}
-              >
-                <option value="Preparando">Preparando</option>
-                <option value="Saiu para entrega">Saiu para entrega</option>
-                <option value="Entregue">Entregue</option>
-                {order.diningOption === 'dine-in' && (
-                  <>
-                    <option value="Pronto para servir">Pronto para servir</option>
-                    <option value="Finalizado">Finalizado</option>
-                  </>
-                )}
-              </select>
-            </div>
-          ))
-        )}
+      <div className="orders-header">
+        <p>Total de pedidos: {orders.length}</p>
+        <button onClick={fetchAllOrder} className="refresh-btn">
+          Atualizar lista
+        </button>
       </div>
+
+      {orders.length === 0 ? (
+        <div className="no-orders">
+          <p>Nenhum pedido encontrado.</p>
+        </div>
+      ) : (
+        <div className="orders-table-container">
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Itens</th>
+                <th>Endereço/Mesa</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order._id}>
+                  <td>{order.userId?.name || "Nome não disponível"}</td>
+                  <td>
+                    {order.items.map((item, index) => (
+                      <span key={item._id || index}>
+                        {item.name} x {item.quantity}
+                        {index < order.items.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </td>
+                  <td>
+                    {order.diningOption === 'dine-in' ? (
+                      `Mesa: ${order.tableNumber}`
+                    ) : (
+                      <>
+                        {order.address?.street}, {order.address?.city}, {order.address?.number}
+                      </>
+                    )}
+                  </td>
+                  <td>R$ {order.amount.toFixed(2)}</td>
+                  <td>
+                    <span className={`status-badge ${order.status.toLowerCase().replace(/\s/g, '-')}`}>
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="actions">
+                    <select
+                      onChange={(event) => statusHandler(event, order._id)}
+                      value={order.status}
+                    >
+                      {order.diningOption === 'dine-in' ? (
+                        <>
+                          <option value="Preparando">Preparando</option>
+                          <option value="Pronto para servir">Pronto para servir</option>
+                          <option value="Finalizado">Finalizado</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="Preparando">Preparando</option>
+                          <option value="Saiu para entrega">Saiu para entrega</option>
+                          <option value="Entregue">Entregue</option>
+                        </>
+                      )}
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

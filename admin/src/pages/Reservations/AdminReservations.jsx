@@ -17,7 +17,7 @@ const AdminReservations = () => {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get(`${url}/api/reservations`, {
+      const response = await axios.get(`${url}/api/reservations/reservations`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

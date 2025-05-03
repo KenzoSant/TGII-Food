@@ -2,10 +2,6 @@ import basket_icon from './basket_icon.png'
 import logo from './logo.png'
 import header_img from './header_img.gif'
 import search_icon from './search_icon.png'
-import menu_1 from './menu_1.png'
-import menu_2 from './menu_2.png'
-import menu_3 from './menu_3.png'
-import menu_4 from './menu_4.png'
 
 import add_icon_white from './add_icon_white.png'
 import add_icon_green from './add_icon_green.png'
@@ -31,6 +27,7 @@ import chef2 from "./chef2.jpg";
 import eye_icon  from "./eye_icon.png";
 import eye_slash_icon from "./eye_slash_icon.png";
 import editar from "./editar.png";
+import reserva from "./reser.png"
 
 export const assets = {
     logo,
@@ -58,25 +55,22 @@ export const assets = {
     banner,
     eye_slash_icon,
     eye_icon,
-    editar
+    editar,
+    reserva
 }
 
 export const menu_list = [
     {
         menu_name: "Entradas",
-        menu_image: menu_1
     },
     {
         menu_name: "Principais",
-        menu_image: menu_2
     },
     {
         menu_name: "Bebidas",
-        menu_image: menu_3
     },
     {
         menu_name: "Sobremesas",
-        menu_image: menu_4
     }
 ]
 

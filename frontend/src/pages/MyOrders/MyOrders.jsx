@@ -15,18 +15,18 @@ const MyOrders = () => {
   const fetchOrders = async () => {
     try {
       if (!user) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       const response = await axios.post(
-        url + "/api/order/userorders", 
+        url + "/api/order/userorders",
         { userId: user._id },
-        { 
-          headers: { 
+        {
+          headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json"
-          } 
+          }
         }
       );
 
@@ -41,6 +41,17 @@ const MyOrders = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'preparando': return 'orange';
+      case 'pronto para servir': return 'blue';
+      case 'saiu para entrega': return 'blue';
+      case 'entregue': return 'green';
+      case 'finalizado': return 'green';
+      default: return 'gray';
     }
   };
 
@@ -74,7 +85,7 @@ const MyOrders = () => {
               <p>R$ {order.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
               <p>Itens: {order.items.length}</p>
               <p>
-                <span>&#x25cf;</span>
+                <span style={{ color: getStatusColor(order.status) }}>&#x25cf;</span>
                 <b> {order.status}</b>
               </p>
               <button onClick={fetchOrders}>Atualizar Status</button>

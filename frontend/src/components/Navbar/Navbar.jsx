@@ -13,7 +13,7 @@ const Navbar = ({ setShowLogin }) => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const isColoredNavbar = location.pathname === "/cart" || location.pathname === "/order" || location.pathname === "/myorders" || location.pathname === "/login"; // ou /order se for esse o nome
+  const isColoredNavbar = location.pathname === "/cart" || location.pathname === "/order" || location.pathname === "/myorders" || location.pathname === "/login" || location.pathname === "/myreservations"; // ou /order se for esse o nome
 
 
 

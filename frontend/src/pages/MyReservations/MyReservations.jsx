@@ -4,6 +4,7 @@ import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { assets } from "../../assets/frontend_assets/assets";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Reservations = () => {
   const { url, token, user } = useContext(StoreContext);
@@ -108,7 +109,7 @@ const Reservations = () => {
         ) : (
           reservations.map((reservation) => (
             <div key={reservation._id} className="my-reservations-reservation">
-              <img src={assets.calendar_icon} alt="Ícone de reserva" />
+              <img src={assets.reserva} alt="Ícone de reserva" />
               <div className="reservation-details">
                 <p><strong>Data:</strong> {formatDate(reservation.date)}</p>
                 <p><strong>Horário:</strong> {reservation.time}</p>

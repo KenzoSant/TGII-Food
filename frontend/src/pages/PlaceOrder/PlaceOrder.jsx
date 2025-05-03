@@ -16,7 +16,7 @@ const PlaceOrder = () => {
     email: "",
     street: "",
     city: "",
-    state: "",
+    number: "",
     zipcode: "",
     phone: "",
   });
@@ -264,11 +264,11 @@ const PlaceOrder = () => {
               />
               <input
                 required
-                name="state"
-                value={data.state}
+                name="number"
+                value={data.number}
                 onChange={onChangeHandler}
                 type="text"
-                placeholder="Estado"
+                placeholder="Numero"
               />
             </div>
             <div className="multi-fields">
