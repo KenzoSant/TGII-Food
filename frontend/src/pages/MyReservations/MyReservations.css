@@ -1,0 +1,81 @@
+.myreservations {
+    margin: 150px 0px;
+}
+
+.myreservations .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.myreservations h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #2C170A;
+}
+
+.my-reservations-reservation {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 1fr 1fr;
+    align-items: center;
+    gap: 30px;
+    font-size: 14px;
+    padding: 20px;
+    color: #2C170A;
+    border: 1.5px solid #cdbfa7;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.my-reservations-reservation img {
+    width: 50px;
+}
+
+.reservation-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.reservation-status p b {
+    font-weight: 500;
+    color: #2C170A;
+}
+
+.reservation-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.my-reservations-reservation button {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    background-color: #cdbfa7;
+    cursor: pointer;
+    color: #2C170A;
+    font-size: 14px;
+}
+
+.my-reservations-reservation .cancel-btn {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+@media (max-width: 900px) {
+    .my-reservations-reservation {
+        grid-template-columns: 1fr;
+        row-gap: 15px;
+        font-size: 12px;
+    }
+    
+    .reservation-actions {
+        justify-content: flex-end;
+    }
+    
+    .my-reservations-reservation button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}

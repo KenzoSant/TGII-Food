@@ -152,7 +152,7 @@ const LoginPopup = ({ setShowLogin }) => {
                 onClick={togglePasswordVisibility}
               >
                 <img 
-                  src={showPassword ? assets.eye_icon : assets.eye_slash_icon} 
+                  src={showPassword ? assets.eye_slash_icon : assets.eye_icon} 
                   alt={showPassword ? "Ocultar senha" : "Mostrar senha"} 
                 />
               </span>

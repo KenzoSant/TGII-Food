@@ -30,6 +30,7 @@ import chef1 from "./chef1.jpg";
 import chef2 from "./chef2.jpg";
 import eye_icon  from "./eye_icon.png";
 import eye_slash_icon from "./eye_slash_icon.png";
+import editar from "./editar.png";
 
 export const assets = {
     logo,
@@ -56,7 +57,8 @@ export const assets = {
     about3,
     banner,
     eye_slash_icon,
-    eye_icon
+    eye_icon,
+    editar
 }
 
 export const menu_list = [

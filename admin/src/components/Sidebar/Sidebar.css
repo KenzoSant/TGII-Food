@@ -12,6 +12,9 @@
     flex-direction: column;
     gap: 20px;
 }
+.sidebar-option img{
+    max-width: 30px;
+}
 .sidebar-option{
     display: flex;
     align-items: center;

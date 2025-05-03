@@ -105,4 +105,57 @@ import userModel from '../models/userModel.js';
   }
 };
 
-export {  createReservation, getReservations, updateReservation, };
+ const getUserReservations = async (req, res) => {
+  try {
+    const reservations = await Reservation.find({ userId: req.user.id })
+      .sort({ date: 1, time: 1 });
+
+    res.json({ 
+      success: true,
+      data: reservations 
+    });
+  } catch (error) {
+    console.error("Erro ao buscar reservas do usuário:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Erro ao buscar reservas",
+      error: error.message 
+    });
+  }
+};
+
+const cancelReservation = async (req, res) => {
+  try {
+    const reservation = await Reservation.findOneAndUpdate(
+      { 
+        _id: req.params.id, 
+        userId: req.user.id,
+        status: 'pending' // Só pode cancelar se estiver pendente
+      },
+      { status: 'canceled' },
+      { new: true }
+    );
+
+    if (!reservation) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Reserva não encontrada ou não pode ser cancelada" 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      message: "Reserva cancelada com sucesso",
+      data: reservation 
+    });
+  } catch (error) {
+    console.error("Erro ao cancelar reserva:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Erro ao cancelar reserva",
+      error: error.message 
+    });
+  }
+};
+
+export {  createReservation, getReservations, updateReservation, cancelReservation, getUserReservations};
